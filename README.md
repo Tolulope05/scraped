@@ -34,7 +34,7 @@ MIT
 
 ## Author
 
-[Tolulope Fakunle][https://www.github.com/tolulope05]
+[Tolulope Fakunle]
 
 
 
