@@ -10,8 +10,34 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
-app.get("/", (req, res) => {
-  res.send("Hello World");
+// Routes
+app.get("/search", (req, res) => {
+  req.query.book = req.query.book.replace(" ", "-");
+  const url = `https://www.bibleref.com/${req.query.book}/${req.query.chapter}/${req.query.book}-${req.query.chapter}-${req.query.verse}.html`;
+  console.log(req.query.book);
+  axios(url)
+    .then((response) => {
+      const html = response.data;
+      const $ = cheerio.load(html);
+      const articles = [];
+
+      $(".comment", html).each(function () {
+        //<-- cannot be a function expression
+        const text = $(this).text();
+        const title = $(this).find("h1").text();
+        print(title);
+        print(text);
+        articles.push({
+          text: text
+            .replace(title, "")
+            .replace(/(\r\n|\n|\r)/gm, "")
+            .replace(/^\s+|\s+$/gm, ""),
+          title: title.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+|\s+$/gm, ""),
+        });
+      });
+      res.json(articles);
+    })
+    .catch((err) => console.log(err));
 });
 
 // Error handler
