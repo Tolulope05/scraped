@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const cheerio = require("cheerio");
+const axios = require("axios");
 const app = express();
 
 // Middleware
@@ -14,7 +15,7 @@ app.use(express.urlencoded({ extended: true }));
 app.get("/search", (req, res) => {
   req.query.book = req.query.book.replace(" ", "-");
   const url = `https://www.bibleref.com/${req.query.book}/${req.query.chapter}/${req.query.book}-${req.query.chapter}-${req.query.verse}.html`;
-  console.log(req.query.book);
+  console.log(req.query.book); // <-- this is the bible book
   axios(url)
     .then((response) => {
       const html = response.data;
@@ -25,15 +26,15 @@ app.get("/search", (req, res) => {
         //<-- cannot be a function expression
         const text = $(this).text();
         const title = $(this).find("h1").text();
-        print(title);
-        print(text);
+        console.log(title);
+        console.log(text);
         articles.push({
           text: text
             .replace(title, "")
             .replace(/(\r\n|\n|\r)/gm, "")
             .replace(/^\s+|\s+$/gm, ""),
           title: title.replace(/(\r\n|\n|\r)/gm, "").replace(/^\s+|\s+$/gm, ""),
-        });
+        }); // This is a regular expression pattern that matches different types of line breaks.
       });
       res.json(articles);
     })
